@@ -1,0 +1,83 @@
+---
+title: "Exploration of Stanford Open Policing Dataset"
+author: "Linni Qin n9632981"
+date: "4 March 2018"
+output: html_document
+---
+
+## Introduction
+
+This Markdown document is going to present the relevant foundings while explorating the dataset of Stanford Open Policing. The dataset contains 130 million records of vehicle and pedestrian stops across 31 states of United States. The hidden relationships between police and the public provides solid foundations for the policy maker to improve the interactions between the police and the public. 
+
+With the purpose to facilate the policing policy practice in the US, this project will apply the following data manipulation skills and machine learning techniques to derive the valuable insights from datasets.  
+
+https://openpolicing.stanford.edu/data/
+
+# Calling or installing  the useful packages
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(ggmap)
+```
+
+31 datasets relating to 31 states cover different sizes, diverse level of details and various year range. Aiming at collecting the proper datasets for initial exploration to define the direction of research, I plot the states which provides details over at least 70% of the stops.Then choose the proper size of datasets to primary epxloration.
+
+```{r,fig.width=10, fig.height=5}
+
+overview <- read.csv("./dataOverview.csv", header = TRUE)
+ovsub <- subset(overview, select = -c(Stops, Time.Range))
+#ovsub <- ovsub[,-1]
+
+ovsubA <- data.frame(rowSums(ovsub == "x"))
+names(ovsubA)[1] <- c("freq")
+ovsubB <- select(ovsub, State)
+ovfreq<- cbind(ovsubB,ovsubA)
+ovdf <- subset(ovfreq, ovfreq$freq>8)
+nrow(ovdf) #There are 12 states contains at least 70% details for more than 8 attributes
+
+
+ggplot(ovdf,aes(x=reorder(ovdf$State,+freq), y=freq)) + geom_bar( fill = "pink", stat = "identity") + xlab("31 States in US") + ylab("Frequency for data over 70%")+ scale_y_continuous(limits = c(0, 11), breaks = seq(0, 11, 1)) +coord_flip() + theme_bw()
+
+data <- merge(x=overview,y=ovdf,by="State")
+data$Stops <- gsub("[,]","" ,data$Stops, perl=TRUE) #delect the character common
+data$Stops <- as.numeric(data$Stops) #convert character into numeric values
+summarise(data, Median=median(data$Stops), Mean= mean(data$Stops), Max=max(data$Stops), Min=min(data$Stops), Std=sd(data$Stops)) 
+
+ggplot(data,aes(x=reorder(data$State,+Stops), y=Stops/10^6)) + geom_bar( fill = "pink", stat = "identity") + xlab("12 States in US") + ylab("Stops Records")+ scale_y_continuous(limits = c(0, 24), breaks = seq(0, 24, 1))  + theme_bw()
+
+#compare the states with data for 11 attributes and there stops records. 
+ovdf11 <- subset(ovdf, ovdf$freq == 11) #Threre are 5 states provides 11 attributes with more than 70% details
+
+
+
+```
+
+```{r,fig.width=15, fig.height=10}
+
+library(maps)
+us <- map_data("state")
+
+p <- ggplot()
+p <- p + geom_polygon( data=us, aes(x=long, y=lat, group = group),colour="white", fill="grey10" )
+p
+
+data11 <- merge(x=overview,y=ovdf11,by="State")
+data11$Stops <- gsub("[,]","" ,data11$Stops, perl=TRUE) #delect the character common
+data11$Stops <- as.numeric(data11$Stops)
+
+x = data.frame(region=tolower(data$State), stops=data$Stops, stringsAsFactors=F)
+y = data.frame(region=tolower(data11$State), stops=data11$Stops, stringsAsFactors=F)
+
+ggplot(y, aes(map_id = region)) + geom_map(aes(fill = stops), map = us) +
+    scale_fill_gradientn(colours=c("blue","green","yellow","red")) + 
+    expand_limits(x = us$long, y = us$lat)
+
+ggplot(x, aes(map_id = region)) + geom_map(aes(fill = stops), map = us) +
+    scale_fill_gradientn(colours=c("blue","green","yellow","red")) + 
+    expand_limits(x = us$long, y = us$lat)
+
+```
+
+Finding 1: most of states which provides better details locate in the north part of US, among then, more states are from the eastern end.
+Finding 2: the stops volume gets bigger when it goes to the south.
