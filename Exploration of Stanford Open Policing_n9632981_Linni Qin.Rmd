@@ -13,13 +13,34 @@ With the purpose to facilate the policing policy practice in the US, this projec
 
 https://openpolicing.stanford.edu/data/
 
+
+
+## In-Scope Problems (3):
+
+1. Which age group commits the most traffic offenses? (15-99 years old drivers)	
+TO DO:  compare the driver number and their ages in the targeted states (3rd party data)
+TO DO:  compare the census statistic in the relating states (3rd party data)
+
+2. What type of offenses they commonly commit? - DUI, Speeding, Stop Signs, Seat Belt, or others?
+
+3. Do those offenses happen commonly in typical state only or across the nation?
+
+## In-Scope Datasets: 
+
+13 states provide detail values for targeted features: --------  "Driver Age" and "Violation" 
+
+
+
 # Calling or installing  the useful packages
 
 ```{r}
 library(ggplot2)
+library(plyr)
 library(dplyr)
 library(ggmap)
 ```
+
+## WARMING UP EXCERCISE - EXPLORE THE DATA OVERVIEW (31 STATES)
 
 31 datasets relating to 31 states cover different sizes, diverse level of details and various year range. Aiming at collecting the proper datasets for initial exploration to define the direction of research, I plot the states which provides details over at least 70% of the stops.Then choose the proper size of datasets to primary epxloration.
 
@@ -49,12 +70,6 @@ ggplot(data,aes(x=reorder(data$State,+Stops), y=Stops/10^6)) + geom_bar( fill = 
 #compare the states with data for 11 attributes and there stops records. 
 ovdf11 <- subset(ovdf, ovdf$freq == 11) #Threre are 5 states provides 11 attributes with more than 70% details
 
-
-
-```
-
-```{r,fig.width=15, fig.height=10}
-
 library(maps)
 us <- map_data("state")
 
@@ -80,4 +95,581 @@ ggplot(x, aes(map_id = region)) + geom_map(aes(fill = stops), map = us) +
 ```
 
 Finding 1: most of states which provides better details locate in the north part of US, among then, more states are from the eastern end.
-Finding 2: the stops volume gets bigger when it goes to the south.
+Finding 2: the stops volume gets bigger when it goes to the bigger states with bigger population.
+
+
+## CONNECTICUT STATE --- OVERVIEW
+
+```{r,fig.width=10, fig.height=5}
+
+connecticut <- read.csv("./CT_cleaned.csv", header = TRUE)
+sapply(connecticut, class)
+library(lubridate) 
+connecticut$stop_date <- ymd(connecticut$stop_date) #convert the class of data into right format
+class(connecticut$stop_date)
+
+```
+
+
+CT dataset consists of the value ranging from 2013 to 2015. The dataset is sperated into three subsets: ct2013, ct2014, ct2015. Then explore the search trends of drivers within different age groups. 
+1. Trends of searching different age groups by month (compare three years)
+2. 
+
+
+```{r,fig.width=10, fig.height=5}
+
+ct2013 <- subset(connecticut, connecticut$stop_date >= "2013-01-01" & connecticut$stop_date < "2014-01-01")
+
+ct2013$month <- months(as.Date(ct2013$stop_date, format = "%y-%m-%d"))
+
+ct2014 <- subset(connecticut, connecticut$stop_date >= "2014-01-01" & connecticut$stop_date < "2015-01-01")
+
+ct2014$month <- months(as.Date(ct2014$stop_date, format = "%y-%m-%d"))
+
+ct2015 <- subset(connecticut, connecticut$stop_date >= "2015-01-01" & connecticut$stop_date < "2016-01-01")
+
+ct2015$month <- months(as.Date(ct2015$stop_date, format = "%y-%m-%d"))
+
+
+```
+Check how many month invloved in each year and the sum of offenses in each subset:
+
+```{r,fig.width=10, fig.height=5}
+m13 <- ddply(ct2013, .(month), "nrow")
+m14 <- ddply(ct2014, .(month), "nrow")
+m15 <- ddply(ct2015, .(month), "nrow")
+
+```
+
+
+2013: Oct. Nov. Dec.
+2014: Jan. -- Dec.
+2015: Jan. Feb. Mar.
+
+As there are more valuable data in 2014 for exploring the 
+
+Plot stop volume in each month:
+
+```{r,fig.width=10, fig.height=5}
+
+m13$month <- ordered(m13$month, levels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October","November", "December"))
+
+ggplot(m13) + geom_bar(aes(x=month, y=nrow), stat = "identity", color = "brown") + xlab ("Months (2013)") + ylab("Stop Sum") + scale_y_continuous(limits = c(0, 18000), breaks = seq(0, 18000, 1800)) + theme_bw()
+
+
+```
+
+```{r,fig.width=10, fig.height=5}
+
+m14$month <- ordered(m14$month, levels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October","November", "December"))
+ggplot(m14) + geom_bar(aes(x=month, y=nrow), stat = "identity", color = "brown") + xlab ("Months (2014)") + ylab("Stop Sum") + scale_y_continuous(limits = c(0, 25000), breaks = seq(0, 25000, 2500)) + theme_bw()
+
+```
+```{r,fig.width=10, fig.height=5}
+
+m15$month <- ordered(m15$month, levels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October","November", "December"))
+ggplot(m15) + geom_bar(aes(x=month, y=nrow), stat = "identity", color = "brown") + xlab ("Months (2015)") + ylab("Stop Sum") + scale_y_continuous(limits = c(0, 18000), breaks = seq(0, 18000, 1800)) + theme_bw()
+
+```
+
+## DRIVER AGE 2014
+
+## Which age group commits the most traffic offenses yearly?
+
+# TO DO: compare the driver number and their ages in the targeted states (3rd party data)
+# TO DO: compare the census statistic in the relating states (3rd party data)
+
+Select the necessary attributes only for quick exploration.(10 fields)
+Referring to data standarization:
+https://github.com/5harad/openpolicing/blob/master/DATA-README.md
+
+
+```{r,fig.width=10, fig.height=5}
+
+class(ct2014$driver_age) 
+
+ct2014 <- select(ct2014, id, stop_date,driver_gender,driver_age,driver_race, violation,search_conducted,search_type,contraband_found,month)
+
+
+```
+
+Assign the age into individual groups: 
+teen driver under 18, 
+adult drivers between 18 and 65 with being seperated into multiple group every 5 years, 
+older driver with more than 65 years old.
+
+```{r,fig.width=10, fig.height=5}
+
+ct2014$driver_age <- replace(ct2014$driver_age, ct2014$driver_age < 18, "15-17")
+ct2014$driver_age <- replace(ct2014$driver_age, ct2014$driver_age >=18 & ct2014$driver_age < 25, "18-24")
+ct2014$driver_age <- replace(ct2014$driver_age, ct2014$driver_age >=25 & ct2014$driver_age < 30, "25-29")
+ct2014$driver_age <- replace(ct2014$driver_age, ct2014$driver_age >=30 & ct2014$driver_age < 35, "30-34")
+ct2014$driver_age <- replace(ct2014$driver_age, ct2014$driver_age >=35 & ct2014$driver_age < 40, "35-39")
+ct2014$driver_age <- replace(ct2014$driver_age, ct2014$driver_age >=40 & ct2014$driver_age < 45, "40-44")
+ct2014$driver_age <- replace(ct2014$driver_age, ct2014$driver_age >=45 & ct2014$driver_age < 50, "45-49")
+ct2014$driver_age <- replace(ct2014$driver_age, ct2014$driver_age >=50 & ct2014$driver_age < 55, "50-54")
+ct2014$driver_age <- replace(ct2014$driver_age, ct2014$driver_age >=55 & ct2014$driver_age < 60, "55-59")
+ct2014$driver_age <- replace(ct2014$driver_age, ct2014$driver_age >=60 & ct2014$driver_age < 65, "60-64")
+ct2014$driver_age <- replace(ct2014$driver_age, ct2014$driver_age >= 65, "65+")
+
+```
+
+
+```{r,fig.width=10, fig.height=5}
+
+age14 <- ddply(ct2014, .(driver_age), "nrow")
+age14 <- replace(age14, is.na(age14), "<15 or >100")
+
+ggplot(age14) + geom_bar(aes(x=driver_age, y=nrow), stat = "identity", color = "brown") + xlab ("Age Groups in Connecticut") + ylab("Stop Distribution (2014)") + scale_y_continuous(limits = c(0, 47000), breaks = seq(0, 47000, 4700)) + theme_bw()
+
+```
+Conclusion: (TO DO, COMPARISION)
+
+In the state of connecticut, drivers with age between 18 and 24 commit the largest amount of offenses in 2014.Then age group 25-29 does. As to the age group of 15-17, the driver commits the offenses with least number. The reason might be there is a small number of teen driver and together with there is law restricts for the teen driver before turning adult or getting Full driver license.
+Groups: 35-39, 40-44, 45-49, 50-54 similar
+
+Overall, it seems that the less offenses the driver commits the elder the driver is.
+
+## 	What type of offenses they commonly commit? - DUI, Speeding, Stop Signs, Seat Belt, or others?
+
+
+```{r,fig.width=10, fig.height=5}
+
+age14_g18_24 <- subset(ct2014, ct2014$driver_age == "18-24")
+age14_mviolation <- ddply(age14_g18_24, .(violation), "nrow")
+
+age14_mviolation <- age14_mviolation[order(-age14_mviolation$nrow),]
+
+head(age14_mviolation)
+```
+
+Speeding is the offense the young driver commonly commit.
+
+```{r,fig.width=10, fig.height=5}
+#Export the csv for quick exploration purpose
+write.csv(age14_mviolation, file = "CT_18_24_Violation.csv", row.names = FALSE)
+write.csv(ct2014, file="ct2014.csv", row.names = FALSE)
+
+```
+
+
+
+## MONTANA STATE --- OVERVIEW
+
+```{r,fig.width=10, fig.height=5}
+
+montana <- read.csv("./MT_cleaned.csv", header = TRUE)
+sapply(montana, class)
+library(lubridate) 
+montana$stop_date <- ymd(montana$stop_date) #convert the class of data into right format
+class(montana$stop_date)
+
+```
+
+
+MT dataset consists of the value ranging from 2009 to 2016. The dataset is sperated into three subsets: mt2009,mt2010, mt2011, mt2012, mt2013, mt2014, mt2015, mt2016.
+
+
+```{r,fig.width=10, fig.height=5}
+
+mt2009 <- subset(montana, montana$stop_date >= "2009-01-01" & montana$stop_date < "2010-01-01")
+mt2009$month <- months(as.Date(mt2009$stop_date, format = "%y-%m-%d"))
+
+mt2010 <- subset(montana, montana$stop_date >= "2010-01-01" & montana$stop_date < "2011-01-01")
+mt2010$month <- months(as.Date(mt2010$stop_date, format = "%y-%m-%d"))
+
+mt2011 <- subset(montana, montana$stop_date >= "2011-01-01" & montana$stop_date < "2012-01-01")
+mt2011$month <- months(as.Date(mt2011$stop_date, format = "%y-%m-%d"))
+
+mt2012 <- subset(montana, montana$stop_date >= "2012-01-01" & montana$stop_date < "2013-01-01")
+mt2012$month <- months(as.Date(mt2012$stop_date, format = "%y-%m-%d"))
+
+mt2013 <- subset(montana, montana$stop_date >= "2013-01-01" & montana$stop_date < "2014-01-01")
+mt2013$month <- months(as.Date(mt2013$stop_date, format = "%y-%m-%d"))
+
+mt2014 <- subset(montana, montana$stop_date >= "2014-01-01" & montana$stop_date < "2015-01-01")
+mt2014$month <- months(as.Date(mt2014$stop_date, format = "%y-%m-%d"))
+
+mt2015 <- subset(montana, montana$stop_date >= "2015-01-01" & montana$stop_date < "2016-01-01")
+mt2015$month <- months(as.Date(mt2015$stop_date, format = "%y-%m-%d"))
+
+mt2016 <- subset(montana, montana$stop_date >= "2016-01-01" & montana$stop_date < "2017-01-01")
+mt2016$month <- months(as.Date(mt2016$stop_date, format = "%y-%m-%d"))
+
+
+```
+Check how many month invloved in each year and the sum of offenses in each subset:
+
+```{r,fig.width=10, fig.height=5}
+mt_m09 <- ddply(mt2009, .(month), "nrow")
+mt_m10 <- ddply(mt2010, .(month), "nrow")
+mt_m11 <- ddply(mt2011, .(month), "nrow")
+mt_m12 <- ddply(mt2012, .(month), "nrow")
+mt_m13 <- ddply(mt2013, .(month), "nrow")
+mt_m14 <- ddply(mt2014, .(month), "nrow")
+mt_m15 <- ddply(mt2015, .(month), "nrow")
+mt_m16 <- ddply(mt2016, .(month), "nrow")
+
+
+```
+
+
+There are 12 month's data for each year in the stat of Montana.
+
+## DRIVER AGE -- MONTANA
+
+## Which age group commits the most traffic offenses yearly? (7 YEAS: 2009-2016)
+
+# TO DO: compare the driver number and their ages in the targeted states (3rd party data)
+# TO DO: compare the census statistic in the relating states (3rd party data)
+
+
+```{r,fig.width=10, fig.height=5}
+
+class(mt2014$driver_age) 
+
+mt2009 <- select(mt2009, stop_date,driver_age, violation)
+mt2011 <- select(mt2011, stop_date,driver_age, violation)
+mt2012 <- select(mt2012, stop_date,driver_age, violation)
+mt2013 <- select(mt2013, stop_date,driver_age, violation)
+mt2014 <- select(mt2014, stop_date,driver_age, violation)
+mt2015 <- select(mt2015, stop_date,driver_age, violation)
+mt2016 <- select(mt2016, stop_date,driver_age, violation)
+
+```
+
+Assign the age into individual groups: 
+teen driver under 18, 
+adult drivers between 18 and 65 with being seperated into multiple group every 5 years, 
+older driver with more than 65 years old.
+
+
+
+
+## EXPLORE MONTANA 2012
+
+```{r,fig.width=10, fig.height=5}
+
+mt2012$driver_age <- replace(mt2012$driver_age, mt2012$driver_age < 18, "15-17")
+mt2012$driver_age <- replace(mt2012$driver_age, mt2012$driver_age >=18 & mt2012$driver_age < 25, "18-24")
+mt2012$driver_age <- replace(mt2012$driver_age, mt2012$driver_age >=25 & mt2012$driver_age < 30, "25-29")
+mt2012$driver_age <- replace(mt2012$driver_age, mt2012$driver_age >=30 & mt2012$driver_age < 35, "30-34")
+mt2012$driver_age <- replace(mt2012$driver_age, mt2012$driver_age >=35 & mt2012$driver_age < 40, "35-39")
+mt2012$driver_age <- replace(mt2012$driver_age, mt2012$driver_age >=40 & mt2012$driver_age < 45, "40-44")
+mt2012$driver_age <- replace(mt2012$driver_age, mt2012$driver_age >=45 & mt2012$driver_age < 50, "45-49")
+mt2012$driver_age <- replace(mt2012$driver_age, mt2012$driver_age >=50 & mt2012$driver_age < 55, "50-54")
+mt2012$driver_age <- replace(mt2012$driver_age, mt2012$driver_age >=55 & mt2012$driver_age < 60, "55-59")
+mt2012$driver_age <- replace(mt2012$driver_age, mt2012$driver_age >=60 & mt2012$driver_age < 65, "60-64")
+mt2012$driver_age <- replace(mt2012$driver_age, mt2012$driver_age >= 65, "65+")
+
+```
+
+
+```{r,fig.width=10, fig.height=5}
+
+mt_age12 <- ddply(mt2012, .(driver_age), "nrow")
+mt_age12 <- replace(mt_age12, is.na(mt_age12), "<15 or >100")
+
+ggplot(mt_age12) + geom_bar(aes(x=driver_age, y=nrow), stat = "identity", color = "brown") + xlab ("Age Groups in Montana") + ylab("Stop Distribution (2012)") + scale_y_continuous(limits = c(0, 22000), breaks = seq(0, 22000, 2200)) + theme_bw()
+
+```
+
+## 	What type of offenses they commonly commit? - DUI, Speeding, Stop Signs, Seat Belt, or others?
+
+
+```{r,fig.width=10, fig.height=5}
+
+mt_age12_g18_24 <- subset(mt2012, mt2012$driver_age == "18-24")
+mt_age12_mviolation <- ddply(mt_age12_g18_24, .(violation), "nrow")
+
+mt_age12_mviolation <- mt_age12_mviolation[order(-mt_age12_mviolation$nrow),]
+
+head(mt_age12_mviolation)
+```
+
+
+
+## EXPLORE MONTANA 2013
+
+```{r,fig.width=10, fig.height=5}
+
+mt2013$driver_age <- replace(mt2013$driver_age, mt2013$driver_age < 18, "15-17")
+mt2013$driver_age <- replace(mt2013$driver_age, mt2013$driver_age >=18 & mt2013$driver_age < 25, "18-24")
+mt2013$driver_age <- replace(mt2013$driver_age, mt2013$driver_age >=25 & mt2013$driver_age < 30, "25-29")
+mt2013$driver_age <- replace(mt2013$driver_age, mt2013$driver_age >=30 & mt2013$driver_age < 35, "30-34")
+mt2013$driver_age <- replace(mt2013$driver_age, mt2013$driver_age >=35 & mt2013$driver_age < 40, "35-39")
+mt2013$driver_age <- replace(mt2013$driver_age, mt2013$driver_age >=40 & mt2013$driver_age < 45, "40-44")
+mt2013$driver_age <- replace(mt2013$driver_age, mt2013$driver_age >=45 & mt2013$driver_age < 50, "45-49")
+mt2013$driver_age <- replace(mt2013$driver_age, mt2013$driver_age >=50 & mt2013$driver_age < 55, "50-54")
+mt2013$driver_age <- replace(mt2013$driver_age, mt2013$driver_age >=55 & mt2013$driver_age < 60, "55-59")
+mt2013$driver_age <- replace(mt2013$driver_age, mt2013$driver_age >=60 & mt2013$driver_age < 65, "60-64")
+mt2013$driver_age <- replace(mt2013$driver_age, mt2013$driver_age >= 65, "65+")
+
+```
+
+
+```{r,fig.width=10, fig.height=5}
+
+mt_age13 <- ddply(mt2013, .(driver_age), "nrow")
+mt_age13 <- replace(mt_age13, is.na(mt_age13), "<15 or >100")
+
+ggplot(mt_age13) + geom_bar(aes(x=driver_age, y=nrow), stat = "identity", color = "brown") + xlab ("Age Groups in Montana") + ylab("Stop Distribution (2013)") + scale_y_continuous(limits = c(0, 22000), breaks = seq(0, 22000, 2200)) + theme_bw()
+
+```
+
+## 	What type of offenses they commonly commit? - DUI, Speeding, Stop Signs, Seat Belt, or others?
+
+
+```{r,fig.width=10, fig.height=5}
+
+mt_age13_g18_24 <- subset(mt2013, mt2013$driver_age == "18-24")
+mt_age13_mviolation <- ddply(mt_age13_g18_24, .(violation), "nrow")
+
+mt_age13_mviolation <- mt_age13_mviolation[order(-mt_age13_mviolation$nrow),]
+
+head(mt_age13_mviolation)
+```
+
+Speeding is the offense the young driver commonly commit.(SAME)
+
+
+
+## EXPLORE MONTANA 2014
+
+```{r,fig.width=10, fig.height=5}
+
+mt2014$driver_age <- replace(mt2014$driver_age, mt2014$driver_age < 18, "15-17")
+mt2014$driver_age <- replace(mt2014$driver_age, mt2014$driver_age >=18 & mt2014$driver_age < 25, "18-24")
+mt2014$driver_age <- replace(mt2014$driver_age, mt2014$driver_age >=25 & mt2014$driver_age < 30, "25-29")
+mt2014$driver_age <- replace(mt2014$driver_age, mt2014$driver_age >=30 & mt2014$driver_age < 35, "30-34")
+mt2014$driver_age <- replace(mt2014$driver_age, mt2014$driver_age >=35 & mt2014$driver_age < 40, "35-39")
+mt2014$driver_age <- replace(mt2014$driver_age, mt2014$driver_age >=40 & mt2014$driver_age < 45, "40-44")
+mt2014$driver_age <- replace(mt2014$driver_age, mt2014$driver_age >=45 & mt2014$driver_age < 50, "45-49")
+mt2014$driver_age <- replace(mt2014$driver_age, mt2014$driver_age >=50 & mt2014$driver_age < 55, "50-54")
+mt2014$driver_age <- replace(mt2014$driver_age, mt2014$driver_age >=55 & mt2014$driver_age < 60, "55-59")
+mt2014$driver_age <- replace(mt2014$driver_age, mt2014$driver_age >=60 & mt2014$driver_age < 65, "60-64")
+mt2014$driver_age <- replace(mt2014$driver_age, mt2014$driver_age >= 65, "65+")
+
+```
+
+
+```{r,fig.width=10, fig.height=5}
+
+mt_age14 <- ddply(mt2014, .(driver_age), "nrow")
+mt_age14 <- replace(mt_age14, is.na(mt_age14), "<15 or >100")
+
+ggplot(mt_age14) + geom_bar(aes(x=driver_age, y=nrow), stat = "identity", color = "brown") + xlab ("Age Groups in Montana") + ylab("Stop Distribution (2014)") + scale_y_continuous(limits = c(0, 21000), breaks = seq(0, 21000, 2100)) + theme_bw()
+
+```
+Conclusion: (TO DO, COMPARISION)
+
+In the state of Montana, similar with state of Connecticut, drivers in age group 18-24 commit the most amount of offenses.
+
+## 	What type of offenses they commonly commit? - DUI, Speeding, Stop Signs, Seat Belt, or others?
+
+
+```{r,fig.width=10, fig.height=5}
+
+mt_age14_g18_24 <- subset(mt2014, mt2014$driver_age == "18-24")
+mt_age14_mviolation <- ddply(mt_age14_g18_24, .(violation), "nrow")
+
+mt_age14_mviolation <- mt_age14_mviolation[order(-mt_age14_mviolation$nrow),]
+
+head(mt_age14_mviolation)
+```
+
+Speeding is the offense the young driver commonly commit.(SAME)
+
+
+
+
+
+## Rhode Island STATE --- OVERVIEW
+
+```{r,fig.width=10, fig.height=5}
+
+ri <- read.csv("./RI_cleaned.csv", header = TRUE)
+sapply(ri, class)
+ri$stop_date <- ymd(ri$stop_date) #convert the class of data into right format
+class(ri$stop_date)
+
+```
+
+
+Rhode Island dataset consists of the value ranging from 2005 to 2015. 
+
+```{r,fig.width=10, fig.height=5}
+
+
+ri2013 <- subset(ri, ri$stop_date >= "2013-01-01" & ri$stop_date < "2014-01-01")
+ri2013$month <- months(as.Date(ri2013$stop_date, format = "%y-%m-%d"))
+
+ri2014 <- subset(ri, ri$stop_date >= "2014-01-01" & ri$stop_date < "2015-01-01")
+ri2014$month <- months(as.Date(ri2014$stop_date, format = "%y-%m-%d"))
+
+ri2015 <- subset(ri, ri$stop_date >= "2015-01-01" & ri$stop_date < "2016-01-01")
+ri2015$month <- months(as.Date(ri2015$stop_date, format = "%y-%m-%d"))
+
+
+```
+Check how many month invloved in each year and the sum of offenses in each subset:
+
+```{r,fig.width=10, fig.height=5}
+
+ri_m13 <- ddply(ri2013, .(month), "nrow")
+ri_m14 <- ddply(ri2014, .(month), "nrow")
+ri_m15 <- ddply(ri2015, .(month), "nrow")
+
+```
+
+
+## DRIVER AGE -- Rhode Island
+
+## Which age group commits the most traffic offenses yearly? (7 YEAS: 2005-2015)
+
+# TO DO: compare the driver number and their ages in the targeted states (3rd party data)
+# TO DO: compare the census statistic in the relating states (3rd party data)
+
+
+```{r,fig.width=10, fig.height=5}
+
+ri2013 <- select(ri2013, stop_date,driver_age, violation)
+ri2014 <- select(ri2014, stop_date,driver_age, violation)
+ri2015 <- select(ri2015, stop_date,driver_age, violation)
+
+```
+
+
+## EXPLORE Rhode Island 2014
+
+```{r,fig.width=10, fig.height=5}
+
+ri2014$driver_age <- replace(ri2014$driver_age, ri2014$driver_age < 18, "15-17")
+ri2014$driver_age <- replace(ri2014$driver_age, ri2014$driver_age >=18 & ri2014$driver_age < 25, "18-24")
+ri2014$driver_age <- replace(ri2014$driver_age, ri2014$driver_age >=25 & ri2014$driver_age < 30, "25-29")
+ri2014$driver_age <- replace(ri2014$driver_age, ri2014$driver_age >=30 & ri2014$driver_age < 35, "30-34")
+ri2014$driver_age <- replace(ri2014$driver_age, ri2014$driver_age >=35 & ri2014$driver_age < 40, "35-39")
+ri2014$driver_age <- replace(ri2014$driver_age, ri2014$driver_age >=40 & ri2014$driver_age < 45, "40-44")
+ri2014$driver_age <- replace(ri2014$driver_age, ri2014$driver_age >=45 & ri2014$driver_age < 50, "45-49")
+ri2014$driver_age <- replace(ri2014$driver_age, ri2014$driver_age >=50 & ri2014$driver_age < 55, "50-54")
+ri2014$driver_age <- replace(ri2014$driver_age, ri2014$driver_age >=55 & ri2014$driver_age < 60, "55-59")
+ri2014$driver_age <- replace(ri2014$driver_age, ri2014$driver_age >=60 & ri2014$driver_age < 65, "60-64")
+ri2014$driver_age <- replace(ri2014$driver_age, ri2014$driver_age >= 65, "65+")
+
+```
+
+
+```{r,fig.width=10, fig.height=5}
+
+ri_age14 <- ddply(ri2014, .(driver_age), "nrow")
+ri_age14  <- replace(ri_age14, is.na(ri_age14), "<15 or >100")
+
+ggplot(ri_age14) + geom_bar(aes(x=driver_age, y=nrow), stat = "identity", color = "brown") + xlab ("Age Groups in Rhode Island") + ylab("Stop Distribution (2014)") + scale_y_continuous(limits = c(0, 14000), breaks = seq(0, 14000, 1400)) + theme_bw()
+
+```
+## 	What type of offenses they commonly commit? - DUI, Speeding, Stop Signs, Seat Belt, or others?
+
+
+```{r,fig.width=10, fig.height=5}
+
+ri_age14_g18_24 <- subset(ri2014, ri2014$driver_age == "18-24")
+ri_age14_mviolation <- ddply(ri_age14_g18_24, .(violation), "nrow")
+
+ri_age14_mviolation <- ri_age14_mviolation[order(-ri_age14_mviolation$nrow),]
+
+head(ri_age14_mviolation)
+```
+
+
+
+
+## VERMONT STATE --- OVERVIEW
+
+```{r,fig.width=10, fig.height=5}
+
+vt <- read.csv("./VT_cleaned.csv", header = TRUE)
+sapply(vt, class)
+vt$stop_date <- ymd(vt$stop_date) #convert the class of data into right format
+class(vt$stop_date)
+
+```
+
+
+Vermont dataset consists of the value ranging from 2010 to 2015. 
+
+```{r,fig.width=10, fig.height=5}
+
+vt2014 <- subset(vt, vt$stop_date >= "2014-01-01" & vt$stop_date < "2015-01-01")
+vt2014$month <- months(as.Date(vt2014$stop_date, format = "%y-%m-%d"))
+
+
+```
+Check how many month invloved in each year and the sum of offenses in each subset:
+
+```{r,fig.width=10, fig.height=5}
+
+vt_m14 <- ddply(vt2014, .(month), "nrow")
+
+
+```
+
+
+## DRIVER AGE -- Vermont
+
+## Which age group commits the most traffic offenses yearly? (7 YEAS: 2010-2015)
+
+# TO DO: compare the driver number and their ages in the targeted states (3rd party data)
+# TO DO: compare the census statistic in the relating states (3rd party data)
+
+
+```{r,fig.width=10, fig.height=5}
+
+vt2014 <- select(vt2014, stop_date,driver_age, violation)
+
+
+```
+
+
+## EXPLORE Vermont 2014
+
+```{r,fig.width=10, fig.height=5}
+
+vt2014$driver_age <- replace(vt2014$driver_age, vt2014$driver_age < 18, "15-17")
+vt2014$driver_age <- replace(vt2014$driver_age, vt2014$driver_age >=18 & vt2014$driver_age < 25, "18-24")
+vt2014$driver_age <- replace(vt2014$driver_age, vt2014$driver_age >=25 & vt2014$driver_age < 30, "25-29")
+vt2014$driver_age <- replace(vt2014$driver_age, vt2014$driver_age >=30 & vt2014$driver_age < 35, "30-34")
+vt2014$driver_age <- replace(vt2014$driver_age, vt2014$driver_age >=35 & vt2014$driver_age < 40, "35-39")
+vt2014$driver_age <- replace(vt2014$driver_age, vt2014$driver_age >=40 & vt2014$driver_age < 45, "40-44")
+vt2014$driver_age <- replace(vt2014$driver_age, vt2014$driver_age >=45 & vt2014$driver_age < 50, "45-49")
+vt2014$driver_age <- replace(vt2014$driver_age, vt2014$driver_age >=50 & vt2014$driver_age < 55, "50-54")
+vt2014$driver_age <- replace(vt2014$driver_age, vt2014$driver_age >=55 & vt2014$driver_age < 60, "55-59")
+vt2014$driver_age <- replace(vt2014$driver_age, vt2014$driver_age >=60 & vt2014$driver_age < 65, "60-64")
+vt2014$driver_age <- replace(vt2014$driver_age, vt2014$driver_age >= 65, "65+")
+
+```
+
+
+```{r,fig.width=10, fig.height=5}
+
+vt_age14 <- ddply(vt2014, .(driver_age), "nrow")
+vt_age14  <- replace(vt_age14, is.na(vt_age14), "<15 or >100")
+
+ggplot(vt_age14) + geom_bar(aes(x=driver_age, y=nrow), stat = "identity", color = "brown") + xlab ("Age Groups in Vermont") + ylab("Stop Distribution (2014)") + scale_y_continuous(limits = c(0, 14000), breaks = seq(0, 14000, 1400)) + theme_bw()
+
+```
+
+
+## 	What type of offenses they commonly commit? - DUI, Speeding, Stop Signs, Seat Belt, or others?
+
+
+```{r,fig.width=10, fig.height=5}
+
+vt_age14_g18_24 <- subset(vt2014, vt2014$driver_age == "18-24")
+vt_age14_mviolation <- ddply(vt_age14_g18_24, .(violation), "nrow")
+
+vt_age14_mviolation <- vt_age14_mviolation[order(-vt_age14_mviolation$nrow),]
+
+head(vt_age14_mviolation)
+```
+
+As the unique values in the field of "violation" in the state of Vermont consist of only four type of violation: Moving violation, Equipment, DUI and Other. So the most type of offense appears to be moving violation.
