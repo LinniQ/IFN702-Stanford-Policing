@@ -1,0 +1,27 @@
+https://blog.patricktriest.com/police-data-python/
+
+example of a data analysis from australian gov
+http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/by+Subject/4125.0~Jan+2012~Main+Features~Labour+force~1110
+
+Age and driving
+https://www.helpguide.org/articles/alzheimers-dementia-aging/how-aging-affects-driving.htm
+
+US Department of Transportaion
+https://www.nhtsa.gov/enforcement-justice-services
+
+DUI report
+https://brandongaille.com/20-drunk-driving-repeat-offenders-statistics/
+
+Speed Driving Statistic
+https://www.statisticbrain.com/driving-citation-statistics/
+
+Fatality Statistics of each state: population
+http://www.iihs.org/iihs/topics/t/general-statistics/fatalityfacts/state-by-state-overview/2014
+
+
+***AGE GROUP POPULATION IN USA*******
+https://www.populationpyramid.net/united-states-of-america/2004/
+
+
+This website has many statistics for driver in us
+https://www.statista.com/topics/1197/car-drivers/
