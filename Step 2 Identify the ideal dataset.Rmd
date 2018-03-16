@@ -1,0 +1,221 @@
+---
+title: "Exploration of Stanford Open Policing Dataset"
+author: "Linni Qin n9632981"
+date: "4 March 2018"
+output: html_document
+---
+
+## In-Scope Datasets: 
+## Claim and Clean the data
+
+13 states provide detail values for targeted features:  
+"id" "Stop Date" Driver Age"  "Violation" 
+
+"id" is for state unique if all the states need to be merged
+"Stop Date" is for exploring the relating trend changing by year, month, week or day
+"Drvier age" is from 15-99 and other. It will be divided into age groups.
+"violation" contains the value for driving offenses. However, the unique value of this colum varies accordingly. For example, there are 125 unique traffic offenses in Connecticut and solely 6 general violation behaviours in Rhode Island. A method to cluster those offenses should be found before proceeding the data analysis. 
+
+TO DO:
+1. Download the 13 states dataset and extract the 4 useful features only for efficient handling purpose.
+2. Save them into H drive
+3. Find out the unique violation value in each state and find a method to cluster them, reduce their range
+
+# Calling or installing  the useful packages
+
+```{r}
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(ggmap)
+```
+
+
+```{r,fig.width=10, fig.height=5}
+
+# claim the dataset from website
+ct <- read.csv("./CT_cleaned.csv", header = TRUE) #24 variables
+mt <- read.csv("./MT_cleaned.csv", header = TRUE) #33 variables
+ri <- read.csv("./RI_cleaned.csv", header = TRUE) # 26 variables
+vt <- read.csv("./VT_cleaned.csv", header = TRUE) # 23 variables
+co <- read.csv("./CO_cleaned.csv", header = TRUE) #26 variables
+fl <- read.csv("./FL_cleaned.csv", header = TRUE) #28 variables
+il <- read.csv("./IL_cleaned.csv", header = TRUE) #26 variables
+ms <- read.csv("./MS_cleaned.csv", header = TRUE) #23 variables
+nc <- read.csv("./NC_cleaned.csv", header = TRUE) #27 variables
+nd <- read.csv("./ND_cleaned.csv", header = TRUE) #23 variables
+nv <- read.csv("./NV_cleaned.csv", header = TRUE) #23 variables
+wa <- read.csv("./WA_cleaned.csv", header = TRUE) #34 variables
+wy <- read.csv("./WY_cleaned.csv", header = TRUE) #24 variables
+
+```
+
+```{r,fig.width=10, fig.height=5}
+# Extract the valuable 4 features
+
+ct <- select(ct, id, stop_date, driver_age, violation)
+mt <- select(mt, id, stop_date, driver_age, violation)
+ri <- select(ri, id, stop_date, driver_age, violation)
+vt <- select(vt, id, stop_date, driver_age, violation)
+co <- select(co, id, stop_date, driver_age, violation)
+fl <- select(fl, id, stop_date, driver_age, violation)
+il <- select(il, id, stop_date, driver_age, violation)
+ms <- select(ms, id, stop_date, driver_age, violation)
+nc <- select(nc, id, stop_date, driver_age, violation)
+nd <- select(nd, id, stop_date, driver_age, violation)
+nv <- select(nv, id, stop_date, driver_age, violation)
+wa <- select(wa, id, stop_date, driver_age, violation)
+wy <- select(wy, id, stop_date, driver_age, violation)
+
+```
+ 
+```{r,fig.width=10, fig.height=5}
+# save the extracted file into the local disk
+
+write.csv(ct, file="ct.csv", row.names = FALSE)
+write.csv(mt, file="mt.csv", row.names = FALSE)
+write.csv(ri, file="ri.csv", row.names = FALSE)
+write.csv(vt, file="vt.csv", row.names = FALSE)
+write.csv(co, file="co.csv", row.names = FALSE)
+write.csv(fl, file="fl.csv", row.names = FALSE)
+write.csv(il, file="il.csv", row.names = FALSE)
+write.csv(ms, file="ms.csv", row.names = FALSE)
+write.csv(nc, file="nc.csv", row.names = FALSE)
+write.csv(nd, file="nd.csv", row.names = FALSE)
+write.csv(nv, file="nv.csv", row.names = FALSE)
+write.csv(wa, file="wa.csv", row.names = FALSE)
+write.csv(wy, file="wy.csv", row.names = FALSE)
+
+```
+
+
+```{r,fig.width=10, fig.height=5}
+
+ctv <-data.frame(ddply(ct, .(violation), "nrow"))  #125 unique violation
+ctv <- arrange(ctv, desc(nrow))
+
+print(ctv)
+write.csv(ctv, file="ctuniqueviolation.csv", row.names = FALSE)
+
+```
+
+```{r,fig.width=10, fig.height=5}
+
+mtv <-data.frame(ddply(mt, .(violation), "nrow")) #333 unique violation
+mtv <- arrange(mtv, desc(nrow))
+
+print(mtv)
+write.csv(mtv, file="mtuniqueviolation.csv", row.names = FALSE)
+
+```
+
+```{r,fig.width=10, fig.height=5}
+riv <-data.frame(ddply(ri, .(violation), "nrow")) #7 unique violation including one missing value
+riv <- arrange(riv, desc(nrow))
+
+print(riv)
+write.csv(riv, file="riuniqueviolation.csv", row.names = FALSE)
+
+```
+
+```{r,fig.width=10, fig.height=5}
+vtv <-data.frame(ddply(vt, .(violation), "nrow")) #6 unique violation including one missing value
+vtv <- arrange(vtv, desc(nrow))
+
+print(vtv)
+write.csv(vtv, file="vtuniqueviolation.csv", row.names = FALSE)
+
+```
+```{r,fig.width=10, fig.height=5}
+cov <-data.frame(ddply(co, .(violation), "nrow")) #1953 unique violation including one missing value
+cov <- arrange(cov, desc(nrow))
+
+print(cov)
+write.csv(cov, file="couniqueviolation.csv", row.names = FALSE)
+
+```
+
+```{r,fig.width=10, fig.height=5}
+flv <-data.frame(ddply(fl, .(violation), "nrow")) #928 unique violation including one missing value
+flv <- arrange(flv, desc(nrow))
+
+print(flv)
+write.csv(flv, file="fluniqueviolation.csv", row.names = FALSE)
+
+```
+
+```{r,fig.width=10, fig.height=5}
+ilv <-data.frame(ddply(il, .(violation), "nrow")) #8 unique violation including one missing value
+ilv <- arrange(ilv, desc(nrow))
+
+print(ilv)
+write.csv(ilv, file="iluniqueviolation.csv", row.names = FALSE)
+
+```
+
+
+```{r,fig.width=10, fig.height=5}
+msv <-data.frame(ddply(ms, .(violation), "nrow")) #non-mapped 0 unique violation including one missing value
+msv <- arrange(msv, desc(nrow))
+
+print(msv)
+write.csv(msv, file="msuniqueviolation.csv", row.names = FALSE)
+
+```
+
+
+```{r,fig.width=10, fig.height=5}
+ncv <-data.frame(ddply(nc, .(violation), "nrow")) #8 unique violation including one missing value
+ncv <- arrange(ncv, desc(nrow))
+
+print(ncv)
+write.csv(ncv, file="ncuniqueviolation.csv", row.names = FALSE)
+
+```
+
+
+
+```{r,fig.width=10, fig.height=5}
+ndv <-data.frame(ddply(nd, .(violation), "nrow")) #464 unique violation including one missing value
+ndv <- arrange(ndv, desc(nrow))
+
+print(ndv)
+write.csv(ndv, file="nduniqueviolation.csv", row.names = FALSE)
+
+```
+
+```{r,fig.width=10, fig.height=5}
+nvv <-data.frame(ddply(nv, .(violation), "nrow")) #15 unique violation including one missing value
+nvv <- arrange(nvv, desc(nrow))
+
+print(nvv)
+write.csv(nvv, file="nvuniqueviolation.csv", row.names = FALSE)
+
+```
+
+
+```{r,fig.width=10, fig.height=5}
+wav <-data.frame(ddply(wa, .(violation), "nrow")) #2113 unique violation including one missing value
+wav <- arrange(wav, desc(nrow))
+
+print(wav)
+write.csv(wav, file="wauniqueviolation.csv", row.names = FALSE)
+
+```
+
+
+```{r,fig.width=10, fig.height=5}
+wyv <-data.frame(ddply(wy, .(violation), "nrow")) #564 unique violation including one missing value
+wyv <- arrange(wyv, desc(nrow))
+
+print(wyv)
+write.csv(wyv, file="wyuniqueviolation.csv", row.names = FALSE)
+
+```
+
+Conclusion: Most of states have mapped detailly with the stop reason, however, different states have recorded the violation with different ways. Some states have over thousands of types of offenses, some states have hundreds and four states have generallized all kinds of offenses into around 7 groups. 
+
+Particularly, Mississippi has not mapped the violation. It is hard to involve it into the analysis for the violation issues.
+Rhode Island, Connecticut, Illinois have not recorded the offenses about DUI. As DUI will be able to result in a serious negative effects for the driver and the third party on the traffice (In the final report, this part has to be justified well in the process of cleaning the data)
+
+Therefore, there are 9 states left currently for further exploration.
