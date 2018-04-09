@@ -1,0 +1,125 @@
+---
+title: "Exploration of Stanford Open Policing Dataset"
+author: "Linni Qin n9632981"
+date: "4 March 2018"
+output: html_document
+---
+
+## In-Scope Datasets: 
+
+Find out the unique violation value in 13 states
+Choose 6 states with speeding, cellphone, and dui records mainly
+
+TO DO:
+Seperate the comma and slash sperated values into new rows
+
+# Calling or installing  the useful packages
+
+```{r}
+library(ggplot2)
+library(plyr)
+library(dplyr)
+```
+
+
+```{r,fig.width=10, fig.height=5}
+
+ct <- read.csv("./ct.csv", header = TRUE) 
+co <- read.csv("./co.csv", header = TRUE) 
+nd <- read.csv("./nd.csv", header = TRUE)  
+nv <- read.csv("./nv.csv", header = TRUE)  
+wa <- read.csv("./wa.csv", header = TRUE)  
+wy <- read.csv("./wy.csv", header = TRUE)  
+```
+
+```{r,fig.width=10, fig.height=5}
+ct$violation <- as.character(ct$violation, levels(ct$violation))
+
+test <- strsplit(ct$violation, ",")
+
+ctseperated <- data.frame(id=rep(ct$id, sapply(test, length)),stopDate =rep(ct$stop_date, sapply(test, length)), driverAge = rep(ct$driver_age, sapply(test, length)), violation = unlist(test))
+```
+
+```{r,fig.width=10, fig.height=5}
+
+co$violation <- as.character(co$violation, levels(co$violation))
+
+test <- strsplit(co$violation, ",")
+
+coseperated <- data.frame(id=rep(co$id, sapply(test, length)),stopDate =rep(co$stop_date, sapply(test, length)), driverAge = rep(co$driver_age, sapply(test, length)), violation = unlist(test))
+```
+
+```{r,fig.width=10, fig.height=5}
+
+nd$violation <- as.character(nd$violation, levels(nd$violation))
+
+test <- strsplit(nd$violation, ",")
+
+ndseperated <- data.frame(id=rep(nd$id, sapply(test, length)),stopDate =rep(nd$stop_date, sapply(test, length)), driverAge = rep(nd$driver_age, sapply(test, length)), violation = unlist(test))
+```
+
+```{r,fig.width=10, fig.height=5}
+
+nv$violation <- as.character(nv$violation, levels(nv$violation))
+
+test <- strsplit(nv$violation, ",")
+
+nvseperated <- data.frame(id=rep(nv$id, sapply(test, length)),stopDate =rep(nv$stop_date, sapply(test, length)), driverAge = rep(nv$driver_age, sapply(test, length)), violation = unlist(test))
+```
+
+```{r,fig.width=10, fig.height=5}
+
+wa$violation <- as.character(wa$violation, levels(wa$violation))
+
+test <- strsplit(wa$violation, ",")
+
+waseperated <- data.frame(id=rep(wa$id, sapply(test, length)),stopDate =rep(wa$stop_date, sapply(test, length)), driverAge = rep(wa$driver_age, sapply(test, length)), violation = unlist(test))
+```
+
+```{r,fig.width=10, fig.height=5}
+
+wy$violation <- as.character(wy$violation, levels(wy$violation))
+
+test <- strsplit(wy$violation, ",")
+
+wyseperated <- data.frame(id=rep(wy$id, sapply(test, length)),stopDate =rep(wy$stop_date, sapply(test, length)), driverAge = rep(wy$driver_age, sapply(test, length)), violation = unlist(test))
+```
+
+## Extract the unique violation and save it into each state dataframe for future comparison.
+
+```{r,fig.width=10, fig.height=5}
+
+ctv <-data.frame(ddply(ctseperated, .(violation), "nrow"))  #125 unique violation
+ctv <- arrange(ctv, desc(nrow))
+write.csv(ctv, file="ctuniqueviolation.csv", row.names = FALSE)
+```
+
+```{r,fig.width=10, fig.height=5}
+cov <-data.frame(ddply(coseperated, .(violation), "nrow")) 
+cov <- arrange(cov, desc(nrow))
+write.csv(cov, file="couniqueviolation.csv", row.names = FALSE)
+```
+
+```{r,fig.width=10, fig.height=5}
+ndv <-data.frame(ddply(ndseperated, .(violation), "nrow")) 
+ndv <- arrange(ndv, desc(nrow))
+write.csv(ndv, file="nduniqueviolation.csv", row.names = FALSE)
+```
+
+```{r,fig.width=10, fig.height=5}
+nvv <-data.frame(ddply(nvseperated, .(violation), "nrow")) 
+nvv <- arrange(nvv, desc(nrow))
+write.csv(nvv, file="nvuniqueviolation.csv", row.names = FALSE)
+```
+
+```{r,fig.width=10, fig.height=5}
+wav <-data.frame(ddply(waseperated, .(violation), "nrow")) 
+wav <- arrange(wav, desc(nrow))
+write.csv(wav, file="wauniqueviolation.csv", row.names = FALSE)
+```
+
+```{r,fig.width=10, fig.height=5}
+wyv <-data.frame(ddply(wyseperated, .(violation), "nrow")) 
+wyv <- arrange(wyv, desc(nrow))
+write.csv(wyv, file="wyuniqueviolation.csv", row.names = FALSE)
+```
