@@ -1,0 +1,368 @@
+---
+title: "Exploration of Stanford Open Policing Dataset"
+author: "Linni Qin n9632981"
+date: "4 March 2018"
+output: html_document
+---
+
+## Group the offenders' age in groups as per the census formate in 3 states(WASHINGTON, COLORADO, NEVADA): 
+
+# Calling or installing  the useful packages
+
+```{r}
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(lubridate) 
+```
+
+```{r,fig.width=10, fig.height=5}
+# import the cleaned file and seperated violation text
+co <- read.csv("./coseperated.csv", header = TRUE) 
+nv <- read.csv("./nvseperated.csv", header = TRUE)  
+wa <- read.csv("./waseperated.csv", header = TRUE)  
+
+```
+
+
+## Washington State (Driver Census vs. Offenders Distribution, by Age group)
+
+# plot the lines of wacensus
+
+```{r,fig.width=10, fig.height=5}
+wacensus <- read.csv("./wacensus.csv", header = TRUE)  
+wacensus$year <- as.character(wacensus$year) # convert the numeric (2010 and 2016) to character for the color purpose in plot 
+class(wacensus$year)
+
+ggplot(wacensus, aes(x=driverAge, y=driverPopulation/1000, group = year)) + geom_line(aes(linetype=year))+ geom_point(aes(shape=year)) + ylab("driverPopulation in thousands")
+
+```
+
+# convert the age of driver into groups 
+
+```{r,fig.width=10, fig.height=5}
+
+wa$driverAge <- replace(wa$driverAge, wa$driverAge <= 19, "15-19")
+wa$driverAge <- replace(wa$driverAge, wa$driverAge >=20 & wa$driverAge < 25, "20-24")
+wa$driverAge <- replace(wa$driverAge, wa$driverAge >=25 & wa$driverAge< 30, "25-29")
+wa$driverAge <- replace(wa$driverAge, wa$driverAge >=30 & wa$driverAge < 35, "30-34")
+wa$driverAge <- replace(wa$driverAge, wa$driverAge >=35 & wa$driverAge < 40, "35-39")
+wa$driverAge <- replace(wa$driverAge, wa$driverAge >=40 & wa$driverAge < 45, "40-44")
+wa$driverAge <- replace(wa$driverAge, wa$driverAge >=45 & wa$driverAge < 50, "45-49")
+wa$driverAge <- replace(wa$driverAge, wa$driverAge >=50 & wa$driverAge < 55, "50-54")
+wa$driverAge <- replace(wa$driverAge, wa$driverAge >=55 & wa$driverAge < 60, "55-59")
+wa$driverAge <- replace(wa$driverAge, wa$driverAge >=60 & wa$driverAge < 65, "60-64")
+wa$driverAge <- replace(wa$driverAge, wa$driverAge >= 65, "65+")
+
+```
+
+```{r,fig.width=18, fig.height=10}
+# Extract the same year range with the census data (2009, 2015)
+# The oplicing data covers 2010 (12 months)-2016 (1-3month)
+
+wa$stopDate <- ymd(wa$stopDate) #convert the class of data "factor" into right format "date" for subset operation
+
+wa09<-subset(wa, wa$stopDate >= "2009-01-01" & wa$stopDate < "2010-01-01")
+wa09$stopDate <- c("2009")
+
+wa15<-subset(wa, wa$stopDate >= "2015-01-01"& wa$stopDate < "2016-01-01")
+wa15$stopDate <- c("2015")
+
+wa0915 <- rbind(wa09, wa15)
+
+```
+
+```{r,fig.width=10, fig.height=5}
+
+# get the frequency count of driverAge based on stopDate
+waAge <- summarise(group_by(wa0915,stopDate,driverAge),count =n())
+
+ggplot(waAge, aes(x=driverAge, y=count/1000, group = stopDate)) + geom_line(aes(linetype=stopDate))+ geom_point(aes(shape=stopDate)) + ylab("Offenders in thousands")
+
+```
+
+## Colorado State (Driver Census vs. Offenders Distribution, by Age group)
+
+# plot the lines of cocensus
+
+```{r,fig.width=10, fig.height=5}
+cocensus <- read.csv("./cocensus.csv", header = TRUE)  
+cocensus$year <- as.character(cocensus$year) # convert the numeric (2010 and 2016) to character for the color purpose in plot 
+
+ggplot(cocensus, aes(x=driverAge, y=driverPopulation/1000, group = year)) + geom_line(aes(linetype=year))+ geom_point(aes(shape=year))+ ylab("driverPopulation in thousands")
+
+```
+
+# convert the age of driver into groups 
+
+```{r,fig.width=10, fig.height=5}
+
+co$driverAge <- replace(co$driverAge, co$driverAge <= 19, "15-19")
+co$driverAge <- replace(co$driverAge, co$driverAge >=20 & co$driverAge < 25, "20-24")
+co$driverAge <- replace(co$driverAge, co$driverAge >=25 & co$driverAge< 30, "25-29")
+co$driverAge <- replace(co$driverAge, co$driverAge >=30 & co$driverAge < 35, "30-34")
+co$driverAge <- replace(co$driverAge, co$driverAge >=35 & co$driverAge < 40, "35-39")
+co$driverAge <- replace(co$driverAge, co$driverAge >=40 & co$driverAge < 45, "40-44")
+co$driverAge <- replace(co$driverAge, co$driverAge >=45 & co$driverAge < 50, "45-49")
+co$driverAge <- replace(co$driverAge, co$driverAge >=50 & co$driverAge < 55, "50-54")
+co$driverAge <- replace(co$driverAge, co$driverAge >=55 & co$driverAge < 60, "55-59")
+co$driverAge <- replace(co$driverAge, co$driverAge >=60 & co$driverAge < 65, "60-64")
+co$driverAge <- replace(co$driverAge, co$driverAge >= 65, "65+")
+
+```
+
+# Colorado State Traffic Offender distribution by age groups
+
+```{r,fig.width=18, fig.height=10}
+# Extract the same year range with the census data (2010, 2015)
+# The oplicing data covers 2010 (12 months)-2016 (1-3month, and a few lines of other months)
+
+co$stopDate <- ymd(co$stopDate) #convert the class of data "factor" into right format "date" for subset operation
+
+co2010<-subset(co, co$stopDate >= "2010-01-01" & co$stopDate < "2011-01-01")
+co2010$stopDate <- c("2010")
+
+co2015<-subset(co, co$stopDate >= "2015-01-01" & co$stopDate < "2016-01-01")
+co2015$stopDate <- c("2015")
+
+co20102015 <- rbind(co2010, co2015)
+
+```
+
+```{r,fig.width=10, fig.height=5}
+
+# get the frequency count of driverAge based on stopDate
+coAge <- summarise(group_by(co20102015,stopDate,driverAge),count =n())
+
+ggplot(coAge, aes(x=driverAge, y=count/1000, group = stopDate)) + geom_line(aes(linetype=stopDate))+ geom_point(aes(shape=stopDate))+ ylab("Offenders in thousands")
+
+```
+
+## Nevada State (Driver Census vs. Offenders Distribution, by Age group)
+
+# plot the lines of necensus
+
+```{r,fig.width=10, fig.height=5}
+nvcensus <- read.csv("./nvcensus.csv", header = TRUE)  
+nvcensus$year <- as.character(nvcensus$year) # convert the numeric (2010 and 2016) to character for the color purpose in plot 
+
+ggplot(nvcensus, aes(x=driverAge, y=driverPopulation/1000, group = year)) + geom_line(aes(linetype=year))+ geom_point(aes(shape=year))+ ylab("driverPopulation in thousands")
+
+```
+
+
+# convert the age of driver into groups 
+
+```{r,fig.width=10, fig.height=5}
+
+nv$driverAge <- replace(nv$driverAge, nv$driverAge <= 19, "15-19")
+nv$driverAge <- replace(nv$driverAge, nv$driverAge >=20 & nv$driverAge < 25, "20-24")
+nv$driverAge <- replace(nv$driverAge, nv$driverAge >=25 & nv$driverAge< 30, "25-29")
+nv$driverAge <- replace(nv$driverAge, nv$driverAge >=30 & nv$driverAge < 35, "30-34")
+nv$driverAge <- replace(nv$driverAge, nv$driverAge >=35 & nv$driverAge < 40, "35-39")
+nv$driverAge <- replace(nv$driverAge, nv$driverAge >=40 & nv$driverAge < 45, "40-44")
+nv$driverAge <- replace(nv$driverAge, nv$driverAge >=45 & nv$driverAge < 50, "45-49")
+nv$driverAge <- replace(nv$driverAge, nv$driverAge >=50 & nv$driverAge < 55, "50-54")
+nv$driverAge <- replace(nv$driverAge, nv$driverAge >=55 & nv$driverAge < 60, "55-59")
+nv$driverAge <- replace(nv$driverAge, nv$driverAge >=60 & nv$driverAge < 65, "60-64")
+nv$driverAge <- replace(nv$driverAge, nv$driverAge >= 65, "65+")
+
+```
+
+# Nevada State Traffic Offender distribution by age groups
+
+```{r,fig.width=18, fig.height=10}
+# Extract the same year range with the census data (2013, 2015)
+# The oplicing data covers 2012 (11 months from mid of Feb)-2016 (a couple of months)
+
+nv$stopDate <- ymd(nv$stopDate) #convert the class of data "factor" into right format "date" for subset operation
+
+nv13<-subset(nv, nv$stopDate >= "2013-01-01" & nv$stopDate < "2014-01-01")
+nv13$stopDate <- c("2013")
+
+nv15<-subset(nv, nv$stopDate >= "2015-01-01" & nv$stopDate < "2016-01-01")
+nv15$stopDate <- c("2015")
+
+nv1315 <- rbind(nv13, nv15)
+
+```
+
+```{r,fig.width=10, fig.height=5}
+
+# get the frequency count of driverAge based on stopDate
+nvAge <- summarise(group_by(nv1315,stopDate,driverAge),count =n())
+
+ggplot(nvAge, aes(x=driverAge, y=count/1000, group = stopDate)) + geom_line(aes(linetype=stopDate))+ geom_point(aes(shape=stopDate))+ ylab("Offenders in thousands")
+
+```
+
+
+## Explore the violation distribution
+
+# Washington state 2009
+
+```{r,fig.width=20, fig.height=15}
+
+# get the frequency count of violation based on driverAge
+waV09 <- summarise(group_by(wa09,driverAge,violation),count =n())
+
+ggplot(waV09, aes(x=violation, y=count, fill=driverAge)) + geom_bar(stat = "identity") # no obvious patterns to tell the insight of dui, cellphone, speeding within the varied age groups
+
+```
+
+```{r,fig.width=20, fig.height=10}
+
+# targetting at speeding, dui, cell phone and age groups)
+
+waSpeed09 <- subset(waV09, waV$violation == "Speeding")
+waDUI09 <- subset(waV09, waV$violation == "DUI")
+waPhone09 <- subset(waV09, waV$violation == "Cell phone")
+
+wa3V09 <- rbind(waSpeed09, waDUI09, waPhone09)
+
+ggplot(wa3V09, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Washington Traffice Violation and Age Groups (2009)") +theme_bw()
+
+```
+
+
+
+
+```{r,fig.width=20, fig.height=10}
+
+# as the number of speeding violation is extraordinarily big, hard to investigate clearly the patterns of cell phone and dui, so I explore the latter two viloation individually for supplement.
+
+wa2V09 <- rbind(waDUI09, waPhone09)
+ggplot(wa2V09, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Washington Traffice Violation and Age Groups (2009) - DUI and Cell Phone only") +theme_bw()
+
+```
+
+# Washington state 2015
+
+```{r,fig.width=20, fig.height=10}
+
+# get the frequency count of violation based on driverAge
+waV15 <- summarise(group_by(wa15,driverAge,violation),count =n())
+
+# targetting at speeding, dui, cell phone and age groups)
+
+waSpeed15 <- subset(waV15, waV15$violation == "Speeding")
+waDUI15 <- subset(waV15, waV15$violation == "DUI")
+waPhone15 <- subset(waV15, waV15$violation == "Cell phone")
+
+wa3V15 <- rbind(waSpeed15, waDUI15, waPhone15)
+
+ggplot(wa3V15, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Washington Traffice Violation and Age Groups (2015)") +theme_bw()
+
+
+```
+
+```{r,fig.width=20, fig.height=10}
+
+# as the number of speeding violation is extraordinarily big, hard to investigate clearly the patterns of cell phone and dui, so I explore the latter two viloation individually for supplement.
+
+wa2V15 <- rbind(waDUI15, waPhone15)
+ggplot(wa2V15, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Washington Traffice Violation and Age Groups (2015) - DUI and Cell Phone only") +theme_bw()
+
+```
+
+
+# Colorado state 2010
+
+```{r,fig.width=20, fig.height=10}
+
+# get the frequency count of violation based on driverAge
+coV10 <- summarise(group_by(co2010,driverAge,violation),count =n())
+
+# targetting at speeding, dui, cell phone and age groups)
+
+coSpeed10 <- subset(coV10, coV10$violation == "Speeding")
+coDUI10 <- subset(coV10, coV10$violation == "DUI")
+coPhone10 <- subset(coV10, coV10$violation == "Cell phone")
+
+co3V10 <- rbind(coSpeed10, coDUI10, coPhone10)
+
+ggplot(co3V10, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Colorado Traffice Violation and Age Groups (2010)") +theme_bw()
+
+
+```
+
+
+# Colorado state 2015
+
+```{r,fig.width=20, fig.height=10}
+
+# get the frequency count of violation based on driverAge
+coV15 <- summarise(group_by(co2015,driverAge,violation),count =n())
+
+# targetting at speeding, dui, cell phone and age groups)
+
+coSpeed15 <- subset(coV15, coV15$violation == "Speeding")
+coDUI15 <- subset(coV15, coV15$violation == "DUI")
+coPhone15 <- subset(coV15, coV15$violation == "Cell phone")
+
+co3V15 <- rbind(coSpeed15, coDUI15, coPhone15)
+
+ggplot(co3V15, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Colorado Traffice Violation and Age Groups (2015)") +theme_bw()
+
+
+```
+
+
+```{r,fig.width=20, fig.height=10}
+
+co2V15 <- rbind(coDUI15, coPhone15)
+
+ggplot(co2V15, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Colorado Traffice Violation and Age Groups (2015) - DUI and Cell Phone only") +theme_bw()
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
