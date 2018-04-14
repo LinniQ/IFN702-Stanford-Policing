@@ -214,9 +214,9 @@ ggplot(waV09, aes(x=violation, y=count, fill=driverAge)) + geom_bar(stat = "iden
 
 # targetting at speeding, dui, cell phone and age groups)
 
-waSpeed09 <- subset(waV09, waV$violation == "Speeding")
-waDUI09 <- subset(waV09, waV$violation == "DUI")
-waPhone09 <- subset(waV09, waV$violation == "Cell phone")
+waSpeed09 <- subset(waV09, waV09$violation == "Speeding")
+waDUI09 <- subset(waV09, waV09$violation == "DUI")
+waPhone09 <- subset(waV09, waV09$violation == "Cell phone")
 
 wa3V09 <- rbind(waSpeed09, waDUI09, waPhone09)
 
@@ -285,7 +285,14 @@ ggplot(co3V10, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="blac
 
 
 ```
+```{r,fig.width=20, fig.height=10}
 
+co1V10 <- rbind(coDUI10)
+
+ggplot(co1V10, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Colorado Traffice Violation and Age Groups (2015) - DUI only") +theme_bw()
+
+
+```
 
 # Colorado state 2015
 
@@ -319,12 +326,66 @@ ggplot(co2V15, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="blac
 
 
 
+# Nevada state 2013
+
+```{r,fig.width=20, fig.height=10}
+
+# get the frequency count of violation based on driverAge
+nvV13 <- summarise(group_by(nv13,driverAge,violation),count =n())
+
+# targetting at speeding, dui, cell phone and age groups)
+
+nvSpeed13 <- subset(nvV13, nvV13$violation == "Speeding")
+nvDUI13 <- subset(nvV13, nvV13$violation == "DUI")
+nvPhone13 <- subset(nvV13, nvV13$violation == "Cell phone")
+
+nv3V13 <- rbind(nvSpeed13, nvDUI13, nvPhone13)
+
+ggplot(nv3V13, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Nevada Traffice Violation and Age Groups (2013)") +theme_bw()
+
+
+```
+
+```{r,fig.width=20, fig.height=10}
+
+nv2V13 <- rbind(nvDUI13, nvPhone13)
+
+ggplot(nv2V13, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Nevada Traffice Violation and Age Groups (2013) - DUI and Cell Phone only") +theme_bw()
+
+
+```
 
 
 
+# Nevada state 2015
+
+```{r,fig.width=20, fig.height=10}
+
+# get the frequency count of violation based on driverAge
+nvV15 <- summarise(group_by(nv15,driverAge,violation),count =n())
+
+# targetting at speeding, dui, cell phone and age groups)
+
+nvSpeed15 <- subset(nvV15, nvV15$violation == "Speeding")
+nvDUI15 <- subset(nvV15, nvV15$violation == "DUI")
+nvPhone15 <- subset(nvV15, nvV15$violation == "Cell phone")
+
+nv3V15 <- rbind(nvSpeed15, nvDUI15, nvPhone15)
+
+ggplot(nv3V15, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Nevada Traffice Violation and Age Groups (2015)") +theme_bw()
 
 
+```
 
+
+```{r,fig.width=20, fig.height=10}
+
+nv2V15 <- rbind(nvDUI15, nvPhone15)
+
+ggplot(nv2V15, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Nevada Traffice Violation and Age Groups (2015) - DUI and Cell Phone only") +theme_bw()
+
+
+```
 
 
 
