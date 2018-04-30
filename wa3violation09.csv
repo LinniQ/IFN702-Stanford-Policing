@@ -1,0 +1,37 @@
+"driverAge","violation","count"
+"15-19","Speeding",37960
+"20-24","Speeding",77774
+"25-29","Speeding",66469
+"30-34","Speeding",53393
+"35-39","Speeding",47770
+"40-44","Speeding",44508
+"45-49","Speeding",42094
+"50-54","Speeding",34738
+"55-59","Speeding",26210
+"60-64","Speeding",18700
+"65+","Speeding",21571
+NA,"Speeding",2624
+"15-19","DUI",1242
+"20-24","DUI",4498
+"25-29","DUI",3855
+"30-34","DUI",2619
+"35-39","DUI",2108
+"40-44","DUI",1866
+"45-49","DUI",1740
+"50-54","DUI",1253
+"55-59","DUI",816
+"60-64","DUI",378
+"65+","DUI",308
+NA,"DUI",310
+"15-19","Cell phone",348
+"20-24","Cell phone",859
+"25-29","Cell phone",886
+"30-34","Cell phone",758
+"35-39","Cell phone",664
+"40-44","Cell phone",603
+"45-49","Cell phone",556
+"50-54","Cell phone",408
+"55-59","Cell phone",291
+"60-64","Cell phone",156
+"65+","Cell phone",126
+NA,"Cell phone",36

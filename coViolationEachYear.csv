@@ -1,0 +1,26 @@
+stopDate,violation,count,,,,,,,,,,,,,,,,,,
+2010,DUI,7571,2011,DUI,6792,2012,DUI,5206,2013,DUI,5022,2014,Cell phone,689,2015,Cell phone,1429,2016,Cell phone,329
+2010,Equipment,18856,2011,Equipment,18615,2012,Equipment,16357,2013,Equipment,14710,2014,DUI,5548,2015,DUI,4773,2016,DUI,1097
+2010,License,21725,2011,License,19966,2012,License,18895,2013,License,17777,2014,Equipment,11323,2015,Equipment,10939,2016,Equipment,2541
+2010,Lights,31960,2011,Lights,34966,2012,Lights,32083,2013,Lights,32150,2014,License,17393,2015,License,17487,2016,License,4342
+2010,Moving violation,463,2011,Moving violation,428,2012,Moving violation,772,2013,Moving violation,495,2014,Lights,32491,2015,Lights,28531,2016,Lights,7806
+2010,Other,34910,2011,Other,40214,2012,Other,34236,2013,Other,32197,2014,Moving violation,968,2015,Moving violation,619,2016,Moving violation,43
+2010,Other (non-mapped),20847,2011,Other (non-mapped),19798,2012,Other (non-mapped),17875,2013,Other (non-mapped),19755,2014,Other,23422,2015,Other,17688,2016,Other,2165
+2010,Paperwork,27321,2011,Paperwork,25612,2012,Paperwork,23632,2013,Paperwork,25186,2014,Other (non-mapped),21283,2015,Other (non-mapped),20848,2016,Other (non-mapped),4726
+2010,Registration/plates,39286,2011,Registration/plates,40626,2012,Registration/plates,39085,2013,Registration/plates,38767,2014,Paperwork,26349,2015,Paperwork,20800,2016,Paperwork,4831
+2010,Safe movement,72720,2011,Safe movement,71905,2012,Safe movement,65540,2013,Safe movement,65329,2014,Registration/plates,31810,2015,Registration/plates,36241,2016,Registration/plates,9896
+2010,Seat belt,25824,2011,Seat belt,22227,2012,Seat belt,18223,2013,Seat belt,16012,2014,Safe movement,66667,2015,Safe movement,63134,2016,Safe movement,14963
+2010,Speeding,170525,2011,Speeding,153749,2012,Speeding,141025,2013,Speeding,150428,2014,Seat belt,17328,2015,Seat belt,17907,2016,Seat belt,4732
+2010,Stop sign/light,3672,2011,Stop sign/light,3802,2012,Stop sign/light,3080,2013,Stop sign/light,3601,2014,Speeding,154599,2015,Speeding,158276,2016,Speeding,39521
+2010,Truck,5754,2011,Truck,11856,2012,Truck,10273,2013,Truck,8047,2014,Stop sign/light,3806,2015,Stop sign/light,3462,2016,Stop sign/light,788
+,,,,,,,,,,,,2014,Truck,8366,2015,Truck,8345,2016,Truck,1231
+,total ,481434,,total ,470556,,total ,426282,,total ,429476,,total ,422042,,total ,410479,,total ,99011
+,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,
+NA,DUI,1,,,,,,,,,,,,,,,,,,
+NA,License,1,,,,,,,,,,,,,,,,,,
+NA,Paperwork,1,,,,,,,,,,,,,,,,,,
+NA,Registration/plates,1,,,,,,,,,,,,,,,,,,
+NA,Safe movement,2,,,,,,,,,,,,,,,,,,
+NA,Speeding,1,,,,,,,,,,,,,,,,,,

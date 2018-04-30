@@ -1,0 +1,15 @@
+stopDate,violation,count,,,,,,,,,,,,,,,
+2010,DUI,1863,2011,Cell phone,11,2012,Cell phone,82,2013,Cell phone,93,2014,Cell phone,153,2015,Cell phone,90
+2010,Equipment,2514,2011,DUI,1819,2012,DUI,1877,2013,DUI,1877,2014,DUI,1614,2015,DUI,771
+2010,License,2476,2011,Equipment,2249,2012,Equipment,2543,2013,Equipment,2971,2014,Equipment,3010,2015,Equipment,1434
+2010,Lights,684,2011,License,2385,2012,License,3060,2013,License,3179,2014,License,3508,2015,License,1853
+2010,Other,4398,2011,Lights,648,2012,Lights,623,2013,Lights,615,2014,Lights,688,2015,Lights,324
+2010,Paperwork,1099,2011,Other,4173,2012,Other,4291,2013,Other,4545,2014,Other,3949,2015,Other,2166
+2010,Registration/plates,3502,2011,Paperwork,1265,2012,Paperwork,1632,2013,Paperwork,1965,2014,Paperwork,2757,2015,Paperwork,1771
+2010,Safe movement,1798,2011,Registration/plates,4105,2012,Registration/plates,5306,2013,Registration/plates,5659,2014,Registration/plates,6321,2015,Registration/plates,3611
+2010,Seat belt,9806,2011,Safe movement,1986,2012,Safe movement,2048,2013,Safe movement,2138,2014,Safe movement,2221,2015,Safe movement,1080
+2010,Speeding,38901,2011,Seat belt,8671,2012,Seat belt,8879,2013,Seat belt,8309,2014,Seat belt,8847,2015,Seat belt,4596
+2010,Stop sign/light,3450,2011,Speeding,35966,2012,Speeding,41934,2013,Speeding,35132,2014,Speeding,35065,2015,Speeding,17735
+2010,Truck,248,2011,Stop sign/light,2890,2012,Stop sign/light,3188,2013,Stop sign/light,2772,2014,Stop sign/light,3044,2015,Stop sign/light,1763
+,,,2011,Truck,240,2012,Truck,335,2013,Truck,256,2014,Truck,235,2015,Truck,127
+,Total,70739,,Total,66408,,Total,75798,,Total,69511,,Total,71412,,Total,37321

@@ -1,0 +1,37 @@
+stopDate,violation,count,,,
+2011,Cell phone,38,2012,Cell phone,98
+2011,DUI,1148,2012,DUI,1158
+2011,Equipment,1815,2012,Equipment,1728
+2011,License,3479,2012,License,3863
+2011,Lights,431,2012,Lights,397
+2011,Moving violation,348,2012,Moving violation,23
+2011,Other,3113,2012,Other,2809
+2011,Other (non-mapped),1095,2012,Other (non-mapped),2688
+2011,Paperwork,5758,2012,Paperwork,5565
+2011,Registration/plates,2649,2012,Registration/plates,2531
+2011,Safe movement,3776,2012,Safe movement,3717
+2011,Seat belt,8074,2012,Seat belt,8672
+2011,Speeding,62156,2012,Speeding,59528
+2011,Stop sign/light,926,2012,Stop sign/light,1454
+2011,Truck,2096,2012,Truck,2006
+,Total,96902,,Total,96237
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+NA,Other,1,,,
+NA,Paperwork,1,,,
+NA,Safe movement,1,,,
+NA,Seat belt,1,,,
+NA,Speeding,21,,,
+NA,Truck,1,,,
