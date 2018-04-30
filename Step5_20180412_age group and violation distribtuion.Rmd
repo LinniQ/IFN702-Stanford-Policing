@@ -12,17 +12,234 @@ output: html_document
 ```{r}
 library(ggplot2)
 library(plyr)
-library(dplyr)
-library(lubridate) 
+library(dplyr) # summarize
+library(lubridate) # convert the date into date format "ymd" and for dealing with other operation on date
 ```
 
 ```{r,fig.width=10, fig.height=5}
 # import the cleaned file and seperated violation text
 co <- read.csv("./coseperated.csv", header = TRUE) 
+nd <- read.csv("./ndseperated.csv", header = TRUE) 
 nv <- read.csv("./nvseperated.csv", header = TRUE)  
 wa <- read.csv("./waseperated.csv", header = TRUE)  
+wy <- read.csv("./wyseperated.csv", header = TRUE)  
 
 ```
+
+```{r,fig.width=10, fig.height=5}
+co$stopDate <- ymd(co$stopDate) #convert the class of data "factor" into right format "date" for subset operation
+nv$stopDate <- ymd(nv$stopDate) 
+nd$stopDate <- ymd(nd$stopDate) 
+wa$stopDate <- ymd(wa$stopDate) 
+wy$stopDate <- ymd(wy$stopDate) 
+```
+
+# Explor the range of month each year in each state ******* (ONE TIME ONLY, SKIP THIS STEP TO PROCEED THE YEAR-LEVEL EXPLORATION)**********
+
+```{r,fig.width=10, fig.height=5}
+co$stopDate<-format(co$stopDate,"%Y-%m") #(2010-2016)
+#unique(co$stopDate) 
+```
+
+```{r,fig.width=10, fig.height=5}
+nd$stopDate<-format(nd$stopDate,"%Y-%m") #2010 - 2015
+#unique(nd$stopDate)
+```
+
+```{r,fig.width=10, fig.height=5}
+nv$stopDate<-format(nv$stopDate,"%Y-%m") # 2012-2016
+#unique(nv$stopDate)
+```
+
+```{r,fig.width=10, fig.height=5}
+wa$stopDate<-format(wa$stopDate,"%Y-%m") # 2009-2016
+#unique(wa$stopDate)
+```
+
+```{r,fig.width=10, fig.height=5}
+wy$stopDate<-format(wy$stopDate,"%Y-%m") # 2011-2012
+#unique(wy$stopDate)
+```
+# *****************************************************************************************************************************************
+
+# Explor year-level total amount of violation, by state
+
+# convert all the stopDate into year only
+```{r,fig.width=10, fig.height=5}
+co$stopDate <- year(co$stopDate)
+nv$stopDate <- year(nv$stopDate)
+nd$stopDate <- year(nd$stopDate)
+wa$stopDate <- year(wa$stopDate)
+wy$stopDate <- year(wy$stopDate)
+
+```
+
+# Colorado State
+```{r,fig.width=15, fig.height=5}
+# get the count of violation based on stopDate
+coViolationEachYear <- summarise(group_by(co,stopDate,violation),count =n())
+#write.csv(coViolationEachYear, file="coViolationEachYear.csv", row.names = FALSE)
+
+coViolationEachYear$stopDate <- as.character(coViolationEachYear$stopDate) 
+
+ggplot(coViolationEachYear, aes(x=violation, y=count/1000, fill=stopDate)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 200), breaks = seq(0, 200, 25))+ ylab("count in thousand") +ggtitle("Colorado Traffic Violation Amount, by Year (2010 - 2016)")+  scale_fill_hue(name="Year")  +theme_bw()
+
+```
+
+```{r,fig.width=15, fig.height=5}
+# test on percentage presentation in y axis
+
+ggplot(coViolationEachYear, aes(x=violation, group=stopDate)) + geom_bar(aes(y=..prop.., fill = factor(..x..)), color="black", stat="count") + facet_grid(~stopDate)+ scale_y_continuous(labels=scales::percent)
+
+```
+
+
+
+
+
+```{r,fig.width=15, fig.height=5}
+# Colorado State
+# get the count of violation based on stopDate
+coSpeed <- subset(coViolationEachYear, coViolationEachYear$violation == "Speeding")
+coDUI <- subset(coViolationEachYear, coViolationEachYear$violation == "DUI")
+coPhone <- subset(coViolationEachYear, coViolationEachYear$violation =="Cell phone")
+coSafeMove <- subset(coViolationEachYear, coViolationEachYear$violation =="Safe movement")
+coMoveVilation <- subset(coViolationEachYear, coViolationEachYear$violation =="Moving violation")
+
+co5ViolationEachYear <- rbind(coSpeed, coSafeMove, coDUI, coPhone, coMoveVilation)
+#write.csv(co5ViolationEachYear, file="co5ViolationEachYear.csv", row.names = FALSE)
+
+co3ViolationEachYear <- rbind(coDUI, coPhone, coMoveVilation)
+
+ggplot(co3ViolationEachYear, aes(x=violation, y=count/1000, fill=stopDate)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, 1))+ ylab("count in thousand") +ggtitle("Colorado Traffic Violation Amount, by Year, Only DUI, Phone, Moving Violation (2010 - 2016)")+  scale_fill_hue(name="Year")  +theme_bw()
+
+```
+
+# North Dakota State
+
+```{r,fig.width=15, fig.height=5}
+# get the count of violation based on stopDate
+ndViolationEachYear <- summarise(group_by(nd,stopDate,violation),count =n())
+#write.csv(ndViolationEachYear, file="ndViolationEachYear.csv", row.names = FALSE)
+
+ndViolationEachYear$stopDate <- as.character(ndViolationEachYear$stopDate) 
+
+ggplot(ndViolationEachYear, aes(x=violation, y=count/1000, fill=stopDate)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 45), breaks = seq(0, 45, 5)) + ylab("count in thousand") +ggtitle("North Dakota Violation Amount, by Year (2010 - 2015)")+  scale_fill_hue(name="Year")  +theme_bw()
+
+```
+
+```{r,fig.width=15, fig.height=5}
+
+ndSpeed <- subset(ndViolationEachYear, ndViolationEachYear$violation == "Speeding")
+ndDUI <- subset(ndViolationEachYear, ndViolationEachYear$violation == "DUI")
+ndPhone <- subset(ndViolationEachYear, ndViolationEachYear$violation =="Cell phone")
+ndSafeMove <- subset(ndViolationEachYear, ndViolationEachYear$violation =="Safe movement")
+ndMoveVilation <- subset(ndViolationEachYear, ndViolationEachYear$violation =="Moving violation")
+
+nd5ViolationEachYear <- rbind(ndSpeed, ndSafeMove, ndDUI, ndPhone, ndMoveVilation)
+#write.csv(nd5ViolationEachYear, file="nd5ViolationEachYear.csv", row.names = FALSE)
+
+nd3ViolationEachYear <- rbind(ndDUI, ndPhone,ndMoveVilation)
+
+ggplot(nd3ViolationEachYear, aes(x=violation, y=count/1000, fill=stopDate)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 2), breaks = seq(0, 2, 0.2))+ ylab("count in thousand") +ggtitle("North Dakota Traffic Violation Amount, by Year, Only DUI, Phone (2010 - 2015)")+  scale_fill_hue(name="Year")  +theme_bw()
+
+```
+
+# Nevada State
+
+```{r,fig.width=15, fig.height=5}
+
+# get the count of violation based on stopDate
+nvViolationEachYear <- summarise(group_by(nv,stopDate,violation),count =n())
+#write.csv(nvViolationEachYear, file="nvViolationEachYear.csv", row.names = FALSE)
+
+nvViolationEachYear$stopDate <- as.character(nvViolationEachYear$stopDate) 
+
+ggplot(nvViolationEachYear, aes(x=violation, y=count/1000, fill=stopDate)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 25)) + ylab("count in thousand") +ggtitle("Nevada Traffic Violation Amount, by Year (2012 - 2016)")+  scale_fill_hue(name="Year")  +theme_bw()
+
+```
+
+```{r,fig.width=15, fig.height=5}
+# Nevada State
+nvSpeed <- subset(nvViolationEachYear, nvViolationEachYear$violation == "Speeding")
+nvDUI <- subset(nvViolationEachYear, nvViolationEachYear$violation == "DUI")
+nvPhone <- subset(nvViolationEachYear, nvViolationEachYear$violation =="Cell phone")
+nvSafeMove <- subset(nvViolationEachYear, nvViolationEachYear$violation =="Safe movement")
+nvMoveVilation <- subset(nvViolationEachYear, nvViolationEachYear$violation =="Moving violation")
+
+nv5ViolationEachYear <- rbind(nvSpeed, nvSafeMove, nvDUI, nvPhone, nvMoveVilation)
+#write.csv(nv5ViolationEachYear, file="nv5ViolationEachYear.csv", row.names = FALSE)
+
+nv3ViolationEachYear <- rbind(nvDUI, nvPhone, nvMoveVilation)
+
+ggplot(nv3ViolationEachYear, aes(x=violation, y=count/1000, fill=stopDate)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 18), breaks = seq(0, 18, 2))+ ylab("count in thousand") +ggtitle("Nevada Traffic Violation Amount, by Year, Only DUI, Phone, Moving violation (2012 - 2016)")+  scale_fill_hue(name="Year")  +theme_bw()
+
+```
+
+
+# Washington State
+
+```{r,fig.width=15, fig.height=5}
+
+# get the count of violation based on stopDate
+waViolationEachYear <- summarise(group_by(wa,stopDate,violation),count =n())
+#write.csv(waViolationEachYear, file="waViolationEachYear.csv", row.names = FALSE)
+
+waViolationEachYear$stopDate <- as.character(waViolationEachYear$stopDate) # convert the numeric (2010 and 2016) to character for the color purpose in plot 
+
+ggplot(waViolationEachYear, aes(x=violation, y=count/1000, fill=stopDate)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 500), breaks = seq(0, 500, 25))+ ylab("count in thousand") +ggtitle("Washington Traffic Violation Amount, by Year (2009 -2016)") +  scale_fill_hue(name="Year") +theme_bw()
+
+```
+
+```{r,fig.width=15, fig.height=5}
+# Washington State
+waSpeed <- subset(waViolationEachYear, waViolationEachYear$violation == "Speeding")
+waDUI <- subset(waViolationEachYear, waViolationEachYear$violation == "DUI")
+waPhone <- subset(waViolationEachYear, waViolationEachYear$violation =="Cell phone")
+waSafeMove <- subset(waViolationEachYear, waViolationEachYear$violation =="Safe movement")
+waMoveVilation <- subset(waViolationEachYear, waViolationEachYear$violation =="Moving violation")
+
+wa5ViolationEachYear <- rbind(waSpeed, waSafeMove,waDUI, waPhone, waMoveVilation)
+#write.csv(wa5ViolationEachYear, file="wa5ViolationEachYear.csv", row.names = FALSE)
+
+wa3ViolationEachYear <- rbind(waDUI, waPhone, waMoveVilation)
+
+ggplot(wa3ViolationEachYear, aes(x=violation, y=count/1000, fill=stopDate)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 25), breaks = seq(0, 25, 2))+ ylab("count in thousand") +ggtitle("Washington Traffic Violation Amount, by Year, Only DUI, Phone, Moving violation (2009 - 2016)")+  scale_fill_hue(name="Year")  +theme_bw()
+
+```
+
+# Wyoming State
+
+```{r,fig.width=15, fig.height=5}
+
+# get the count of violation based on stopDate
+wyViolationEachYear <- summarise(group_by(wy,stopDate,violation),count =n())
+#write.csv(wyViolationEachYear, file="wyViolationEachYear.csv", row.names = FALSE)
+
+wyViolationEachYear$stopDate <- as.character(wyViolationEachYear$stopDate) 
+
+ggplot(wyViolationEachYear, aes(x=violation, y=count/1000, fill=stopDate)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 70), breaks = seq(0, 70, 5))+ ylab("count in thousand") +ggtitle("Wyoming Traffic Violation Amount, by Year (2011-2012)") +  scale_fill_hue(name="Year") +theme_bw()
+
+```
+
+
+```{r,fig.width=15, fig.height=5}
+
+wySpeed <- subset(wyViolationEachYear, wyViolationEachYear$violation == "Speeding")
+wyDUI <- subset(wyViolationEachYear, wyViolationEachYear$violation == "DUI")
+wyPhone <- subset(wyViolationEachYear, wyViolationEachYear$violation =="Cell phone")
+wySafeMove <- subset(wyViolationEachYear, wyViolationEachYear$violation =="Safe movement")
+wyMoveVilation <- subset(wyViolationEachYear, wyViolationEachYear$violation =="Moving violation")
+
+wy5ViolationEachYear <- rbind(wySpeed, wySafeMove, wyDUI, wyPhone, wyMoveVilation)
+#write.csv(wy5ViolationEachYear, file="wy5ViolationEachYear.csv", row.names = FALSE)
+
+wy3ViolationEachYear <- rbind(wyDUI, wyPhone, wyMoveVilation)
+
+ggplot(wy3ViolationEachYear, aes(x=violation, y=count/1000, fill=stopDate)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 2), breaks = seq(0, 2, 0.1))+ ylab("count in thousand") +ggtitle("Wyoming Traffic Violation Amount, by Year, Only DUI, Phone, Moving violation (2011 - 2012)")+  scale_fill_hue(name="Year")  +theme_bw()
+
+```
+
 
 
 ## Washington State (Driver Census vs. Offenders Distribution, by Age group)
@@ -36,7 +253,11 @@ class(wacensus$year)
 
 ggplot(wacensus, aes(x=driverAge, y=driverPopulation/1000, group = year)) + geom_line(aes(linetype=year))+ geom_point(aes(shape=year)) + ylab("driverPopulation in thousands")
 
+library(scales)  # for percentage scales
+ggplot(wacensus, aes(x=driverAge, y=driverPopulation/1000, fill=year)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 1000), breaks = seq(0, 1000, 50))+ ylab("Thousands in Driver Population") +ggtitle("Washington Licenced Driver Population, by Age Group, by Year (2009 - 2015)")  +theme_bw()
+
 ```
+
 
 # convert the age of driver into groups 
 
@@ -56,6 +277,7 @@ wa$driverAge <- replace(wa$driverAge, wa$driverAge >= 65, "65+")
 
 ```
 
+# *************************************************SKIP IT IF THE YEAR HAS BEEN CONVERTED IN THE ABOVE CHUNCKS**********************
 ```{r,fig.width=18, fig.height=10}
 # Extract the same year range with the census data (2009, 2015)
 # The oplicing data covers 2010 (12 months)-2016 (1-3month)
@@ -71,13 +293,16 @@ wa15$stopDate <- c("2015")
 wa0915 <- rbind(wa09, wa15)
 
 ```
-
+# ********************************************************************************************************************************************
 ```{r,fig.width=10, fig.height=5}
 
 # get the frequency count of driverAge based on stopDate
-waAge <- summarise(group_by(wa0915,stopDate,driverAge),count =n())
+waAge <- summarise(group_by(wa,stopDate,driverAge),count =n())
+write.csv(waAge, file="waOffender.csv", row.names = FALSE)
 
-ggplot(waAge, aes(x=driverAge, y=count/1000, group = stopDate)) + geom_line(aes(linetype=stopDate))+ geom_point(aes(shape=stopDate)) + ylab("Offenders in thousands")
+waAge$stopDate <- as.character(waAge$stopDate) 
+
+ggplot(waAge, aes(x=driverAge, y=count/1000, fill = stopDate)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) + scale_y_continuous(limits = c(0, 240), breaks = seq(0, 240, 20))+ ylab("count in thousand") + ggtitle("Washington driver in groups and their violation frequency (2009 - 2016)") +  scale_fill_hue(name="Year")  +theme_bw()
 
 ```
 
@@ -133,6 +358,7 @@ co20102015 <- rbind(co2010, co2015)
 
 # get the frequency count of driverAge based on stopDate
 coAge <- summarise(group_by(co20102015,stopDate,driverAge),count =n())
+#write.csv(coAge, file="coOffender.csv", row.names = FALSE)
 
 ggplot(coAge, aes(x=driverAge, y=count/1000, group = stopDate)) + geom_line(aes(linetype=stopDate))+ geom_point(aes(shape=stopDate))+ ylab("Offenders in thousands")
 
@@ -191,6 +417,7 @@ nv1315 <- rbind(nv13, nv15)
 
 # get the frequency count of driverAge based on stopDate
 nvAge <- summarise(group_by(nv1315,stopDate,driverAge),count =n())
+#write.csv(nvAge, file="nvOffender.csv", row.names = FALSE)
 
 ggplot(nvAge, aes(x=driverAge, y=count/1000, group = stopDate)) + geom_line(aes(linetype=stopDate))+ geom_point(aes(shape=stopDate))+ ylab("Offenders in thousands")
 
@@ -219,6 +446,7 @@ waDUI09 <- subset(waV09, waV09$violation == "DUI")
 waPhone09 <- subset(waV09, waV09$violation == "Cell phone")
 
 wa3V09 <- rbind(waSpeed09, waDUI09, waPhone09)
+#write.csv(wa3V09, file="wa3violation09.csv", row.names = FALSE)
 
 ggplot(wa3V09, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Washington Traffice Violation and Age Groups (2009)") +theme_bw()
 
@@ -250,6 +478,7 @@ waDUI15 <- subset(waV15, waV15$violation == "DUI")
 waPhone15 <- subset(waV15, waV15$violation == "Cell phone")
 
 wa3V15 <- rbind(waSpeed15, waDUI15, waPhone15)
+#write.csv(wa3V15, file="wa3violation15.csv", row.names = FALSE)
 
 ggplot(wa3V15, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Washington Traffice Violation and Age Groups (2015)") +theme_bw()
 
@@ -280,6 +509,7 @@ coDUI10 <- subset(coV10, coV10$violation == "DUI")
 coPhone10 <- subset(coV10, coV10$violation == "Cell phone")
 
 co3V10 <- rbind(coSpeed10, coDUI10, coPhone10)
+#write.csv(co3V10, file="co3violation10.csv", row.names = FALSE)
 
 ggplot(co3V10, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Colorado Traffice Violation and Age Groups (2010)") +theme_bw()
 
@@ -308,6 +538,7 @@ coDUI15 <- subset(coV15, coV15$violation == "DUI")
 coPhone15 <- subset(coV15, coV15$violation == "Cell phone")
 
 co3V15 <- rbind(coSpeed15, coDUI15, coPhone15)
+#write.csv(co3V15, file="co3violation15.csv", row.names = FALSE)
 
 ggplot(co3V15, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Colorado Traffice Violation and Age Groups (2015)") +theme_bw()
 
@@ -340,6 +571,7 @@ nvDUI13 <- subset(nvV13, nvV13$violation == "DUI")
 nvPhone13 <- subset(nvV13, nvV13$violation == "Cell phone")
 
 nv3V13 <- rbind(nvSpeed13, nvDUI13, nvPhone13)
+#write.csv(nv3V13, file="nv3violation13.csv", row.names = FALSE)
 
 ggplot(nv3V13, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Nevada Traffice Violation and Age Groups (2013)") +theme_bw()
 
@@ -371,6 +603,7 @@ nvDUI15 <- subset(nvV15, nvV15$violation == "DUI")
 nvPhone15 <- subset(nvV15, nvV15$violation == "Cell phone")
 
 nv3V15 <- rbind(nvSpeed15, nvDUI15, nvPhone15)
+#write.csv(nv3V15, file="nv3violation15.csv", row.names = FALSE)
 
 ggplot(nv3V15, aes(x=driverAge, y=count, fill=violation)) + geom_bar(color="black", stat="identity", position=position_dodge(), size=.4) +  ggtitle("Nevada Traffice Violation and Age Groups (2015)") +theme_bw()
 
